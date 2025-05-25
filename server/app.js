@@ -1,3 +1,4 @@
+// Main Root file
 import express from "express";
 
 import { PORT } from "./config/env.js";
@@ -17,7 +18,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/subscriptions", subscriptionRouter);
+app.use("/api/v1/subscription", subscriptionRouter);
 
 app.use(errorMiddleware);
 

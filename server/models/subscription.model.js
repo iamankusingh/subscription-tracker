@@ -1,3 +1,4 @@
+// subscription schema for database
 import mongoose from "mongoose";
 
 const subscriptionSchema = new mongoose.Schema(

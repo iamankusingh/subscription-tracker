@@ -1,3 +1,4 @@
+// user schema for database
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -11,11 +12,11 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      requirde: [true, "User Email is required"],
+      required: [true, "User Email is required"],
       unique: true,
       trim: true,
       lowercase: true,
-      match: [/\S+@\s+\.S+/, "please fill a valid email address"],
+      match: [/^\S+@\S+\.\S+$/, "please fill a valid email address"],
     },
     password: {
       type: String,
@@ -26,6 +27,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

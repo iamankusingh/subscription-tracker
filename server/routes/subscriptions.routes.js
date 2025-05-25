@@ -1,3 +1,4 @@
+// routes for subscription
 import { Router } from "express";
 
 const subscriptionRouter = Router();

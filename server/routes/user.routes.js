@@ -1,14 +1,13 @@
+// routes for user (CRUD operation)
 import { Router } from "express";
+import { getAllUsers, getAUser } from "../controllers/user.controller.js";
+import authorize from "../middlewares/auth.middleware.js";
 
 const userRouter = Router();
 
-userRouter.get("/", (req, res) => {
-  res.send({ title: "GET all users" });
-});
+userRouter.get("/", authorize, getAllUsers);
 
-userRouter.get("/:id", (req, res) => {
-  res.send({ title: "GET users details" });
-});
+userRouter.get("/:id", authorize, getAUser);
 
 userRouter.post("/", (req, res) => {
   res.send({ title: "CREATE new user" });
