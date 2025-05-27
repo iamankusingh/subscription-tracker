@@ -1,6 +1,6 @@
 // routes for authentication user (sign-up, sign-in, sign-out)
 import { Router } from "express";
-import { signIn, signOut, signUp } from "../controllers/auth.controllers.js";
+import { signIn, signOut, signUp } from "../controllers/auth.controller.js";
 
 const authRouter = Router();
 
