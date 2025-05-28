@@ -3,7 +3,10 @@ import User from "../models/user.model.js";
 
 export const getAllUsers = async (req, res, next) => {
   try {
+    // find all users from database
     const users = await User.find();
+
+    // api status code and response
     res.status(200).json({ success: true, data: users });
   } catch (error) {
     next(error);
@@ -12,6 +15,7 @@ export const getAllUsers = async (req, res, next) => {
 
 export const getAUser = async (req, res, next) => {
   try {
+    // find specefic user from database by id from params
     const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
@@ -19,6 +23,8 @@ export const getAUser = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
+
+    // api status code and response
     res.status(200).json({ success: true, data: user });
   } catch (error) {
     next(error);

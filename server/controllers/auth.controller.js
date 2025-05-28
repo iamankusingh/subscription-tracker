@@ -11,9 +11,10 @@ export const signUp = async (req, res, next) => {
   session.startTransaction();
 
   try {
-    // create new user
+    // get data from frontend (forms)
     const { name, email, password } = req.body;
 
+    // check if empty fields
     if (!name || !email || !password) {
       return res
         .status(400)
@@ -38,6 +39,7 @@ export const signUp = async (req, res, next) => {
       { session }
     );
 
+    // jwt sign
     const token = jwt.sign({ userId: newUser[0]._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
@@ -45,6 +47,7 @@ export const signUp = async (req, res, next) => {
     await session.commitTransaction();
     session.endSession();
 
+    // api status code and response
     res.status(201).json({
       success: true,
       message: "User created succesfully",
@@ -63,7 +66,10 @@ export const signUp = async (req, res, next) => {
 export const signIn = async (req, res, next) => {
   // sign in logic
   try {
+    // get data from frontend (forms)
     const { email, password } = req.body;
+
+    // find user from database
     const user = await User.findOne({ email });
     if (!user) {
       const error = new Error("User not found");
@@ -71,6 +77,7 @@ export const signIn = async (req, res, next) => {
       throw error;
     }
 
+    // validate password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       const error = new Error("Invalid Password");
@@ -78,10 +85,12 @@ export const signIn = async (req, res, next) => {
       throw error;
     }
 
+    // jwt sing
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
 
+    // api status code and response
     res.status(200).json({
       sucess: true,
       message: "User signed in successfully",
