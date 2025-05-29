@@ -10,12 +10,14 @@ import connectToDatabase from "./database/mongodb.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import cookieParser from "cookie-parser";
 import arcjetMiddleware from "./middlewares/arcjet.middleware.js";
+import cors from "cors";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
 
 app.use(arcjetMiddleware);
 
@@ -26,11 +28,14 @@ app.use("/api/v1/subscription", subscriptionRouter);
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to subscription tracker platform");
+  res.status(200).json({
+    success: true,
+    message: "Welcome to subscription tracker platform",
+  });
 });
 
 app.listen(PORT, async () => {
-  console.log(`server running on localhost:${PORT}`);
+  console.log(`server running on http://localhost:${PORT}`);
 
   await connectToDatabase();
 });
