@@ -1,47 +1,39 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-interface SignupFormData {
-  name: string;
+interface SigninFormData {
   email: string;
   password: string;
 }
 
-interface SignupResponse {
+interface SigninResponse {
   success?: boolean;
   message?: string;
   data?: JSON;
 }
 
-const Signup: React.FC = () => {
-  const [name, setName] = useState<string>("");
+const Signin: React.FC = () => {
   const [email, setEmail] = useState<string>("");
-  const [pass1, setPass1] = useState<string>("");
-  const [pass2, setPass2] = useState<string>("");
+  const [pass, setPass] = useState<string>("");
   const [status, setStatus] = useState<string>("");
 
   const navigate = useNavigate();
+
+  const formData: SigninFormData = {
+    email: email,
+    password: pass,
+  };
 
   const handleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     event.preventDefault();
 
-    if (pass1 !== pass2) {
-      setStatus("Both password should match");
-    } else {
-      setStatus("Registering...");
-    }
+    console.log(formData);
 
     try {
-      const formData: SignupFormData = {
-        name: name,
-        email: email,
-        password: pass2,
-      };
-
       const response: Response = await fetch(
-        "http://localhost:5500/api/v1/auth/sign-up",
+        "http://localhost:5500/api/v1/auth/sign-in",
         {
           method: "POST",
           headers: {
@@ -52,24 +44,21 @@ const Signup: React.FC = () => {
       );
 
       if (response.ok) {
-        const result: SignupResponse = await response.json();
-        console.log("Sign up success", result);
-        setStatus("Done! Redirecting to sign in page...");
+        const result: SigninResponse = await response.json();
+        console.log("Sign in success", result);
+        setStatus("Done! Redirecting to user page...");
 
-        navigate("http://localhost:5500/api/v1/auth/sign-in");
-      } else {
-        console.error("error sending data", response.statusText);
-        setStatus("error sending data");
+        navigate("http://localhost:5500/api/v1/user/");
       }
-    } catch (error: unknown) {
-      console.error(error);
+    } catch (error) {
+      console.error("Somthing went wring", error);
     }
   };
 
   return (
     <main className="h-full flex flex-col items-center justify-center gap-8">
       <div className="mt-10">
-        <h2 className="text-3xl">Create account - Subscription Tracker</h2>
+        <h2 className="text-3xl">Log in to Subscription Tracker</h2>
       </div>
 
       <form
@@ -78,18 +67,6 @@ const Signup: React.FC = () => {
         className="p-4 flex flex-col items-center gap-4 rounded-lg text-xl bg-cyan-800"
         onSubmit={handleSubmit}
       >
-        <div>
-          <label htmlFor="">Name</label>
-          <br />
-          <input
-            type="text"
-            name="name"
-            className="p-1 bg-gray-600 rounded-sm"
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-
         <div>
           <label htmlFor="">Email</label>
           <br />
@@ -107,20 +84,9 @@ const Signup: React.FC = () => {
           <br />
           <input
             type="password"
-            className="p-1 bg-gray-600 rounded-sm"
-            onChange={(e) => setPass1(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="">Confirm password</label>
-          <br />
-          <input
-            type="password"
             name="password"
             className="p-1 bg-gray-600 rounded-sm"
-            onChange={(e) => setPass2(e.target.value)}
+            onChange={(e) => setPass(e.target.value)}
             required
           />
         </div>
@@ -128,7 +94,7 @@ const Signup: React.FC = () => {
         <div>
           <input
             type="submit"
-            value="Register"
+            value="Login"
             className="p-2 rounded-sm bg-teal-600 cursor-pointer"
           />
         </div>
@@ -141,4 +107,4 @@ const Signup: React.FC = () => {
   );
 };
 
-export default Signup;
+export default Signin;

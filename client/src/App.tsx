@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Header from "./components/Header";
+// import Header from "./components/Header";
 
 function App() {
   const [data, setData] = useState<{
@@ -15,9 +15,11 @@ function App() {
   }, []);
   return (
     <>
-      <Header />
-      <h1>Subscription Tracker</h1>
-      <div>{data ? <p>{data.message}</p> : <p>Loading...</p>}</div>
+      <main>
+        {/* <Header /> */}
+        <h1>Subscription Tracker</h1>
+        <div>{data ? <p>{data.message}</p> : <p>Loading...</p>}</div>
+      </main>
     </>
   );
 }
