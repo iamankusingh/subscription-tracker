@@ -6,10 +6,17 @@ interface SigninFormData {
   password: string;
 }
 
+interface User {
+  _id: string;
+}
+
 interface SigninResponse {
   success?: boolean;
   message?: string;
-  data?: JSON;
+  data?: {
+    user: User;
+    token: string;
+  };
 }
 
 const Signin: React.FC = () => {
@@ -47,8 +54,11 @@ const Signin: React.FC = () => {
         const result: SigninResponse = await response.json();
         console.log("Sign in success", result);
         setStatus("Done! Redirecting to user page...");
+        // set bearer token into localstorage
+        localStorage.setItem("token", result.data?.token || "");
+        // document.cookie = `token=${result.data?.token}; path=/; max-age=86400`; // 1 day expiration
 
-        navigate("http://localhost:5500/api/v1/user/");
+        navigate(`/user/${result.data?.user._id}`);
       }
     } catch (error) {
       console.error("Somthing went wring", error);

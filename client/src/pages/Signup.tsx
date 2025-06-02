@@ -56,7 +56,7 @@ const Signup: React.FC = () => {
         console.log("Sign up success", result);
         setStatus("Done! Redirecting to sign in page...");
 
-        navigate("http://localhost:5500/api/v1/auth/sign-in");
+        navigate("/sign-in");
       } else {
         console.error("error sending data", response.statusText);
         setStatus("error sending data");
