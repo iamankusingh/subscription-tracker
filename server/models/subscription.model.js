@@ -17,7 +17,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      enum: ["Rupees"],
+      enum: ["Rupees", "USD"],
     },
     frequency: {
       type: String,
@@ -45,7 +45,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "expired", "cancel"],
+      enum: ["Active", "Expired", "Canceled"],
       default: "active",
     },
     startDate: {

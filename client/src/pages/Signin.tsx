@@ -36,7 +36,7 @@ const Signin: React.FC = () => {
   ): Promise<void> => {
     event.preventDefault();
 
-    console.log(formData);
+    // console.log(formData);
 
     try {
       const response: Response = await fetch(
@@ -55,13 +55,20 @@ const Signin: React.FC = () => {
         console.log("Sign in success", result);
         setStatus("Done! Redirecting to user page...");
         // set bearer token into localstorage
+        localStorage.clear();
         localStorage.setItem("token", result.data?.token || "");
-        // document.cookie = `token=${result.data?.token}; path=/; max-age=86400`; // 1 day expiration
 
         navigate(`/user/${result.data?.user._id}`);
+      } else if (response.status === 404) {
+        setStatus("Invalid email");
+      } else if (response.status === 401) {
+        setStatus("Invalid password");
+      } else {
+        console.error("Something went wrong", response.statusText);
+        setStatus("Unable to loggin");
       }
-    } catch (error) {
-      console.error("Somthing went wring", error);
+    } catch (error: unknown) {
+      console.error(error);
     }
   };
 
@@ -72,41 +79,37 @@ const Signin: React.FC = () => {
       </div>
 
       <form
-        action="http://localhost:5500/api/v1/auth/sign-up"
-        method="POST"
         className="p-4 flex flex-col items-center gap-4 rounded-lg text-xl bg-cyan-800"
         onSubmit={handleSubmit}
       >
         <div>
-          <label htmlFor="">Email</label>
+          <label htmlFor="email">Email</label>
           <br />
           <input
+            id="email"
             type="email"
             name="email"
-            className="p-1 bg-gray-600 rounded-sm"
+            className="inputBox"
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="">Password</label>
+          <label htmlFor="password">Password</label>
           <br />
           <input
+            id="password"
             type="password"
             name="password"
-            className="p-1 bg-gray-600 rounded-sm"
+            className="inputBox"
             onChange={(e) => setPass(e.target.value)}
             required
           />
         </div>
 
         <div>
-          <input
-            type="submit"
-            value="Login"
-            className="p-2 rounded-sm bg-teal-600 cursor-pointer"
-          />
+          <input type="submit" value="Log in" className="submitButton" />
         </div>
       </form>
 

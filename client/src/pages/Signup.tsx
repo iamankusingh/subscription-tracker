@@ -10,7 +10,13 @@ interface SignupFormData {
 interface SignupResponse {
   success?: boolean;
   message?: string;
-  data?: JSON;
+  data?: {
+    token?: string;
+    user?: {
+      name: string;
+      email: string;
+    };
+  };
 }
 
 const Signup: React.FC = () => {
@@ -29,6 +35,7 @@ const Signup: React.FC = () => {
 
     if (pass1 !== pass2) {
       setStatus("Both password should match");
+      return;
     } else {
       setStatus("Registering...");
     }
@@ -79,58 +86,55 @@ const Signup: React.FC = () => {
         onSubmit={handleSubmit}
       >
         <div>
-          <label htmlFor="">Name</label>
+          <label htmlFor="name">Name</label>
           <br />
           <input
             type="text"
             name="name"
-            className="p-1 bg-gray-600 rounded-sm"
+            className="inputBox"
             onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="">Email</label>
+          <label htmlFor="email">Email</label>
           <br />
           <input
             type="email"
             name="email"
-            className="p-1 bg-gray-600 rounded-sm"
+            className="inputBox"
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="">Password</label>
+          <label htmlFor="pass1">Password</label>
           <br />
           <input
             type="password"
-            className="p-1 bg-gray-600 rounded-sm"
+            name="pass1"
+            className="inputBox"
             onChange={(e) => setPass1(e.target.value)}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="">Confirm password</label>
+          <label htmlFor="password">Confirm password</label>
           <br />
           <input
             type="password"
             name="password"
-            className="p-1 bg-gray-600 rounded-sm"
+            className="inputBox"
             onChange={(e) => setPass2(e.target.value)}
             required
           />
         </div>
 
         <div>
-          <input
-            type="submit"
-            value="Register"
-            className="p-2 rounded-sm bg-teal-600 cursor-pointer"
-          />
+          <input type="submit" value="Register" className="submitButton" />
         </div>
       </form>
 

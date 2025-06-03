@@ -25,3 +25,10 @@ body {
     background-color: #ffffff;
   }
 }
+.inputBox {
+  @apply p-1 bg-gray-600 rounded-sm;
+}
+
+.submitButton {
+  @apply p-2 rounded-sm bg-teal-600 cursor-pointer;
+}
