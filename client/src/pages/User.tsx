@@ -27,13 +27,45 @@ interface createSubscriptionFormData {
   startDate: Date | undefined;
 }
 
-// interface createSubscriptionResponse {}
+interface createSubscriptionResponse {
+  success?: boolean;
+  message?: string;
+  data?: {
+    _id: string;
+    name: string;
+    price: number;
+    currency: string;
+    frequency: string;
+    category: string;
+    payment: string;
+    status: string;
+    startDate: Date | undefined;
+  };
+}
+
+interface subscriptionResponse {
+  success?: boolean;
+  message?: string;
+  data?: Array<{
+    _id: string;
+    name: string;
+    price: number;
+    currency: string;
+    frequency: string;
+    category: string;
+    payment: string;
+    status: string;
+    startDate: Date | string;
+    renewalDate: Date | string;
+    createdAt: Date | string;
+  }>;
+}
 
 const User: React.FC = () => {
-  // fetching user
+  // fetching user ////////////////////////////
   const { id } = useParams();
 
-  const [result, setResult] = useState<userData | undefined>();
+  const [username, setUsername] = useState<userData | undefined>();
 
   const fetchApi = async (): Promise<void> => {
     try {
@@ -50,7 +82,7 @@ const User: React.FC = () => {
       if (response.ok) {
         const result: userData = await response.json();
         // console.log("User data fetched successfully", result);
-        setResult(result);
+        setUsername(result);
       } else {
         console.error("Failed to fetch user data");
       }
@@ -64,7 +96,7 @@ const User: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //  creating subscription
+  //  creating subscription ////////////////////////////
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [currency, setCurrency] = useState<string>("");
@@ -106,24 +138,72 @@ const User: React.FC = () => {
       );
 
       if (response.ok) {
-        const result = await response.json();
+        const result: createSubscriptionResponse = await response.json();
         console.log("Subscription response", result);
+        alert("Subscription created successfully");
       }
     } catch (error) {
       console.error("Something went wrong", error);
+      alert("Failed to create subscription");
     }
   };
 
-  // gettign subscription
+  // gettign subscriptions ////////////////////////////
+  const [subscriptionData, setSubscriptionData] = useState<
+    | Array<{
+        _id: string;
+        name: string;
+        price: number;
+        currency: string;
+        frequency: string;
+        category: string;
+        payment: string;
+        status: string;
+        startDate: Date | string;
+        renewalDate: Date | string;
+        createdAt: Date | string;
+      }>
+    | undefined
+  >([]);
+
+  const fetchSubscription = async (): Promise<void> => {
+    try {
+      const response: Response = await fetch(
+        `http://localhost:5500/api/v1/subscription/user/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const result: subscriptionResponse = await response.json();
+        console.log("Subscription result", result);
+        console.log("Subscription data", result.data);
+        setSubscriptionData(result.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch subscription data", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubscription();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main>
       <div>
-        <h1>{`Welcome ${result?.data?.name}`}</h1>
+        <h1 className="p-2 text-2xl">{`Welcome ${username?.data?.name}`}</h1>
       </div>
 
-      <div className="flex flex-col items-center justify-center">
-        <h3>Create new subscription</h3>
+      {/* create subscription form */}
+      <section className="flex flex-col items-center justify-center">
+        <h3 className="p-2 text-xl">Create new subscription</h3>
 
         <form
           action="https://localhost:5500/api/v1/subscription"
@@ -136,6 +216,7 @@ const User: React.FC = () => {
             <input
               type="text"
               name="sub-name"
+              id="sub-name"
               placeholder="Netflix, Disney, etc..."
               className="inputBox"
               onChange={(e) => setName(e.target.value)}
@@ -149,6 +230,7 @@ const User: React.FC = () => {
             <input
               type="number"
               name="price"
+              id="price"
               placeholder="149"
               className="inputBox"
               onChange={(e) => setPrice(Number(e.target.value))}
@@ -161,6 +243,7 @@ const User: React.FC = () => {
             <br />
             <select
               name="currency"
+              id="currency"
               onChange={(e) => setCurrency(e.target.value)}
               required
             >
@@ -181,6 +264,7 @@ const User: React.FC = () => {
             <br />
             <select
               name="frequency"
+              id="frequency"
               onChange={(e) => setFrequency(e.target.value)}
               required
             >
@@ -207,6 +291,7 @@ const User: React.FC = () => {
             <br />
             <select
               name="category"
+              id="category"
               onChange={(e) => setCategory(e.target.value)}
               required
             >
@@ -257,6 +342,7 @@ const User: React.FC = () => {
             <input
               type="text"
               name="payment"
+              id="payment"
               placeholder="Cash, UPI, card..."
               className="inputBox"
               onChange={(e) => setPayment(e.target.value)}
@@ -269,6 +355,7 @@ const User: React.FC = () => {
             <br />
             <select
               name="status"
+              id="status"
               onChange={(e) => setStatus(e.target.value)}
               required
             >
@@ -293,6 +380,7 @@ const User: React.FC = () => {
             <input
               type="date"
               name="startDate"
+              id="startDate"
               className="inputBox"
               onChange={(e) =>
                 setStartDate(
@@ -305,9 +393,29 @@ const User: React.FC = () => {
 
           <div>
             <input type="submit" value="Create" className="submitButton" />
+            <input type="reset" value="Clear" className="submitButton mx-4" />
           </div>
         </form>
-      </div>
+      </section>
+
+      <section className="mt-8 text-center">
+        <h4 className="text-xl">Your Listed Subscriptions</h4>
+
+        <div className="p-4 grid md:grid-cols-2 gap-4">
+          {subscriptionData?.map((data) => (
+            <div
+              key={data._id}
+              className="my-4 p-4 border rounded bg-gray-700 text-left"
+            >
+              {Object.entries(data).map(([key, value]) => (
+                <div key={key}>
+                  <strong>{key}:</strong> {String(value)}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
     </main>
   );
 };

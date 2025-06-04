@@ -52,7 +52,7 @@ const Signin: React.FC = () => {
 
       if (response.ok) {
         const result: SigninResponse = await response.json();
-        console.log("Sign in success", result);
+        // console.log("Sign in success", result);
         setStatus("Done! Redirecting to user page...");
         // set bearer token into localstorage
         localStorage.clear();
@@ -86,9 +86,9 @@ const Signin: React.FC = () => {
           <label htmlFor="email">Email</label>
           <br />
           <input
-            id="email"
             type="email"
             name="email"
+            id="email"
             className="inputBox"
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -99,9 +99,9 @@ const Signin: React.FC = () => {
           <label htmlFor="password">Password</label>
           <br />
           <input
-            id="password"
             type="password"
             name="password"
+            id="password"
             className="inputBox"
             onChange={(e) => setPass(e.target.value)}
             required

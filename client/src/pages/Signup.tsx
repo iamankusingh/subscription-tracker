@@ -91,6 +91,7 @@ const Signup: React.FC = () => {
           <input
             type="text"
             name="name"
+            id="name"
             className="inputBox"
             onChange={(e) => setName(e.target.value)}
             required
@@ -103,6 +104,7 @@ const Signup: React.FC = () => {
           <input
             type="email"
             name="email"
+            id="email"
             className="inputBox"
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -115,6 +117,7 @@ const Signup: React.FC = () => {
           <input
             type="password"
             name="pass1"
+            id="pass1"
             className="inputBox"
             onChange={(e) => setPass1(e.target.value)}
             required
@@ -127,6 +130,7 @@ const Signup: React.FC = () => {
           <input
             type="password"
             name="password"
+            id="password"
             className="inputBox"
             onChange={(e) => setPass2(e.target.value)}
             required

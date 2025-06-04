@@ -25,6 +25,12 @@ export const getAUserSubscription = async (req, res, next) => {
     // find all subscriptions of a user
     const subscription = await Subscription.find({ user: req.params.id });
 
+    if (!subscription) {
+      res.status(404).json({ Success: false, message: "Data not found" });
+    }
+
+    // console.log("subscription", subscription);
+
     // api status code and response
     res.status(200).json({ success: true, data: subscription });
   } catch (error) {
