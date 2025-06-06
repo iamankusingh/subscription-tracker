@@ -78,21 +78,24 @@ const subscriptionSchema = new mongoose.Schema(
 // auto calculate renewal date
 subscriptionSchema.pre("save", function (next) {
   if (!this.renewalDate) {
-    const renewalPeriods = {
-      dailt: 1,
-      weekly: 7,
-      month: 30,
-      yearly: 365,
-    };
-
     this.renewalDate = new Date(this.startDate);
-    this.renewalDate.setDate(
-      this.renewalDate.getDate() + renewalPeriods[this.frequency]
-    );
-  }
 
-  if (this.renewalDate < new Date()) {
-    this.status = "expired";
+    switch (this.frequency) {
+      case "daily":
+        this.renewalDate.setDate(this.renewalDate.getDate() + 1);
+        break;
+      case "weekly":
+        this.renewalDate.setDate(this.renewalDate.getDate() + 7);
+        break;
+      case "monthly":
+        this.renewalDate.setMonth(this.renewalDate.getMonth() + 1);
+        break;
+      case "yearly":
+        this.renewalDate.setFullYear(this.renewalDate.getFullYear() + 1);
+        break;
+      default:
+        throw new Error("Unknown frequency: " + this.frequency);
+    }
   }
 
   next();

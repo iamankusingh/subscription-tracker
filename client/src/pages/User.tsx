@@ -141,6 +141,7 @@ const User: React.FC = () => {
         const result: createSubscriptionResponse = await response.json();
         console.log("Subscription response", result);
         alert("Subscription created successfully");
+        fetchSubscription();
       }
     } catch (error) {
       console.error("Something went wrong", error);
@@ -194,6 +195,31 @@ const User: React.FC = () => {
     fetchSubscription();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleDeleteSubscription = async (_id: string) => {
+    try {
+      const response: Response = await fetch(
+        `http://localhost:5500/api/v1/subscription/${_id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Subscription deleted successfully", result);
+        alert("Subscription deleted successfully");
+        // Refresh the subscription data
+        fetchSubscription();
+      }
+    } catch (error) {
+      console.error("Something went wrong while deleting subscription", error);
+    }
+  };
 
   return (
     <main>
@@ -401,17 +427,45 @@ const User: React.FC = () => {
       <section className="mt-8 text-center">
         <h4 className="text-xl">Your Listed Subscriptions</h4>
 
-        <div className="p-4 grid md:grid-cols-2 gap-4">
+        <div className="p-4 grid md:grid-cols-2 md:gap-6">
           {subscriptionData?.map((data) => (
             <div
               key={data._id}
               className="my-4 p-4 border rounded bg-gray-700 text-left"
             >
-              {Object.entries(data).map(([key, value]) => (
-                <div key={key}>
-                  <strong>{key}:</strong> {String(value)}
-                </div>
-              ))}
+              <p>Name: {data.name}</p>
+              <p>Cost: {data.price}</p>
+              <p>Currency: {data.currency}</p>
+              <p>frequency: {data.frequency}</p>
+              <p>Category: {data.category}</p>
+              <p>Payment: {data.payment}</p>
+              <p>Status: {data.status}</p>
+              <p>
+                Date of creation:{" "}
+                {typeof data.createdAt === "string"
+                  ? data.createdAt
+                  : data.createdAt?.toLocaleDateString()}
+              </p>
+
+              <p>
+                Start Date:{" "}
+                {typeof data.startDate === "string"
+                  ? data.startDate
+                  : data.startDate?.toLocaleDateString()}
+              </p>
+              <p>
+                End Date:
+                {typeof data.renewalDate === "string"
+                  ? data.renewalDate
+                  : data.renewalDate?.toLocaleDateString()}
+              </p>
+
+              <button
+                className="submitButton"
+                onClick={() => handleDeleteSubscription(data._id)}
+              >
+                Delete
+              </button>
             </div>
           ))}
         </div>

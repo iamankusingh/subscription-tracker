@@ -52,3 +52,14 @@ export const createSubscription = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteSubscription = async (req, res, next) => {
+  try {
+    await Subscription.findByIdAndDelete(req.params.id);
+    // api status code and response
+    res.status(200).json({ success: true, message: "Subscription deleted" });
+    // console.log("Deleted subscription with ID:", req.params.id);
+  } catch (error) {
+    next(error);
+  }
+};
