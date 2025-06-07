@@ -30,3 +30,19 @@ export const getAUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateUser = async (req, res, next) => {
+  try {
+    res.send("Update user");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  try {
+    res.send("Delete user");
+  } catch (error) {
+    next(error);
+  }
+};

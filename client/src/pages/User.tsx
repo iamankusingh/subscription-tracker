@@ -63,10 +63,11 @@ interface subscriptionResponse {
 
 const User: React.FC = () => {
   // fetching user ////////////////////////////
-  const { id } = useParams();
+  const { id } = useParams(); //userid
 
   const [username, setUsername] = useState<userData | undefined>();
 
+  // fetch user info
   const fetchApi = async (): Promise<void> => {
     try {
       const response: Response = await fetch(
@@ -81,7 +82,7 @@ const User: React.FC = () => {
       );
       if (response.ok) {
         const result: userData = await response.json();
-        // console.log("User data fetched successfully", result);
+        console.log("User data fetched successfully", result);
         setUsername(result);
       } else {
         console.error("Failed to fetch user data");
@@ -96,7 +97,7 @@ const User: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //  creating subscription ////////////////////////////
+  // variables to store form data
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [currency, setCurrency] = useState<string>("");
@@ -106,6 +107,7 @@ const User: React.FC = () => {
   const [status, setStatus] = useState<string>("");
   const [startDate, setStartDate] = useState<Date>();
 
+  // setting form data
   const formData: createSubscriptionFormData = {
     name: name,
     price: price,
@@ -117,13 +119,24 @@ const User: React.FC = () => {
     startDate: startDate,
   };
 
-  const handleCreateSubscription = async (
-    event: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
+  const [formForModify, setFormForModify] = useState<boolean>(false);
+  const [subscriptionId, setSubscriptionId] = useState<string>("");
+
+  // function to handle form (create or modify subscription)
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // console.log(formData);
+    console.log("Form data", formData);
 
+    if (formForModify) {
+      modifySubscription(subscriptionId);
+    } else {
+      createSubscription();
+    }
+  };
+
+  //  creating subscription ////////////////////////////
+  const createSubscription = async (): Promise<void> => {
     try {
       const response: Response = await fetch(
         "http://localhost:5500/api/v1/subscription",
@@ -139,7 +152,7 @@ const User: React.FC = () => {
 
       if (response.ok) {
         const result: createSubscriptionResponse = await response.json();
-        console.log("Subscription response", result);
+        console.log("Subscription created successfullt", result);
         alert("Subscription created successfully");
         fetchSubscription();
       }
@@ -149,7 +162,7 @@ const User: React.FC = () => {
     }
   };
 
-  // gettign subscriptions ////////////////////////////
+  // array to store all subscriptions of the user
   const [subscriptionData, setSubscriptionData] = useState<
     | Array<{
         _id: string;
@@ -167,6 +180,7 @@ const User: React.FC = () => {
     | undefined
   >([]);
 
+  // gettign subscriptions ////////////////////////////
   const fetchSubscription = async (): Promise<void> => {
     try {
       const response: Response = await fetch(
@@ -182,8 +196,7 @@ const User: React.FC = () => {
 
       if (response.ok) {
         const result: subscriptionResponse = await response.json();
-        console.log("Subscription result", result);
-        console.log("Subscription data", result.data);
+        console.log("Subscriptions data of the user", result.data);
         setSubscriptionData(result.data);
       }
     } catch (error) {
@@ -196,29 +209,66 @@ const User: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDeleteSubscription = async (_id: string) => {
+  // Deleting subscriptions ////////////////////////////
+  const deleteSubscription = async (_id: string) => {
+    if (confirm("Are you sure?") == true) {
+      try {
+        const response: Response = await fetch(
+          `http://localhost:5500/api/v1/subscription/${_id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log("Subscription deleted successfully", result);
+          alert("Subscription deleted successfully");
+          // Refresh the subscription data
+          fetchSubscription();
+        }
+      } catch (error) {
+        console.error(
+          "Something went wrong while deleting subscription",
+          error
+        );
+        alert("Failed to delete subscription");
+      }
+    }
+  };
+
+  // Modifying subscriptions ////////////////////////////
+  const modifySubscription = async (_id: string): Promise<void> => {
     try {
       const response: Response = await fetch(
         `http://localhost:5500/api/v1/subscription/${_id}`,
         {
-          method: "DELETE",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          body: JSON.stringify(formData),
         }
       );
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Subscription deleted successfully", result);
-        alert("Subscription deleted successfully");
+        console.log("Subscription modified successfully", result);
+        alert("Subscription modified successfully");
         // Refresh the subscription data
         fetchSubscription();
       }
     } catch (error) {
-      console.error("Something went wrong while deleting subscription", error);
+      console.error("Something went wrong while modifying subscription", error);
+      alert("Failed to modify subscription");
     }
+
+    setFormForModify(false);
   };
 
   return (
@@ -234,7 +284,7 @@ const User: React.FC = () => {
         <form
           action="https://localhost:5500/api/v1/subscription"
           className="p-4 grid md:grid-cols-2 items-center gap-4 rounded-lg text-xl bg-cyan-800"
-          onSubmit={handleCreateSubscription}
+          onSubmit={handleFormSubmit}
         >
           <div>
             <label htmlFor="sub-name">Subscription name</label>
@@ -418,7 +468,11 @@ const User: React.FC = () => {
           </div>
 
           <div>
-            <input type="submit" value="Create" className="submitButton" />
+            <input
+              type="submit"
+              value={formForModify ? "Modify" : "Create"}
+              className="submitButton"
+            />
             <input type="reset" value="Clear" className="submitButton mx-4" />
           </div>
         </form>
@@ -462,7 +516,20 @@ const User: React.FC = () => {
 
               <button
                 className="submitButton"
-                onClick={() => handleDeleteSubscription(data._id)}
+                onClick={() => {
+                  setFormForModify(!formForModify);
+                  setSubscriptionId(data._id);
+                  alert(
+                    "Form is now in modify mode!! Please fill the form again with correct details."
+                  );
+                }}
+              >
+                Modify
+              </button>
+
+              <button
+                className="mx-4 submitButton"
+                onClick={() => deleteSubscription(data._id)}
               >
                 Delete
               </button>

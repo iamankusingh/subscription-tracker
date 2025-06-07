@@ -63,3 +63,25 @@ export const deleteSubscription = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateSubscription = async (req, res, next) => {
+  try {
+    const newSubscription = await Subscription.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body }
+      // { new: true }
+    );
+
+    if (!newSubscription) {
+      const error = new Error("Subscription not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // api status code and response
+    res.status(200).json({ success: true, data: newSubscription });
+    console.log("Updated subscription with ID:", req.params.id);
+  } catch (error) {
+    next(error);
+  }
+};
