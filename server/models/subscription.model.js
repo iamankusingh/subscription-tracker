@@ -29,7 +29,7 @@ const subscriptionSchema = new mongoose.Schema(
         "Sports",
         "Entertainment",
         "News",
-        "Business",
+        "Bussiness",
         "Education",
         "Personal",
         "Health",

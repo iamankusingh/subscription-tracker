@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { NavLink, useParams } from "react-router";
 
 interface User {
   name: string;
@@ -275,6 +275,16 @@ const User: React.FC = () => {
     <main>
       <div>
         <h1 className="p-2 text-2xl">{`Welcome ${username?.data?.name}`}</h1>
+      </div>
+
+      <div>
+        <NavLink
+          to={`/account/${id}`}
+          end
+          className="p-1 rounded-sm bg-teal-600"
+        >
+          Account
+        </NavLink>
       </div>
 
       {/* create subscription form */}
