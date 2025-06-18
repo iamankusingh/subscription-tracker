@@ -1,4 +1,5 @@
 // user authorization
+import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 
 export const getAllUsers = async (req, res, next) => {
@@ -33,7 +34,27 @@ export const getAUser = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
   try {
-    res.send("Update user");
+    const { name, email, password } = req.body;
+
+    // hast the password
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, {
+      name,
+      email,
+      password: hashPassword,
+    });
+
+    if (!updatedUser) {
+      const error = new Error("user not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // api status code and response
+    res.status(200).json({ success: true, data: updatedUser });
+    console.log("Updated user with ID:", req.params.id);
   } catch (error) {
     next(error);
   }
